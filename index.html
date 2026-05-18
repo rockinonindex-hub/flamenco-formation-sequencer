@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flamenco Formation Sequencer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Flamenco Formation Sequencer</h1>
+      <p>コンパス単位で群舞フォーメーションを入力・再生する実証版 v0.1</p>
+    </div>
+    <div class="status-pill" id="saveStatus">未保存</div>
+  </header>
+
+  <main class="layout">
+    <section class="left-panel">
+      <section class="card project-card">
+        <h2>基本設定</h2>
+        <div class="grid-form">
+          <label>
+            曲名
+            <input id="projectTitle" type="text" placeholder="例：発表会ソレア" />
+          </label>
+          <label>
+            BPM
+            <input id="bpmInput" type="number" min="20" max="260" step="1" />
+          </label>
+          <label>
+            拍数/コンパス
+            <select id="beatsInput">
+              <option value="12">12</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="6">6</option>
+            </select>
+          </label>
+          <label>
+            再生速度
+            <select id="speedInput">
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1.0x</option>
+            </select>
+          </label>
+        </div>
+        <div class="inline-controls">
+          <label class="check">
+            <input id="metroToggle" type="checkbox" />
+            メトロノーム
+          </label>
+          <label class="check">
+            <input id="easingToggle" type="checkbox" checked />
+            イージング
+          </label>
+          <label class="check">
+            <input id="autoScrollToggle" type="checkbox" checked />
+            表を追従
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <h2>バイレ</h2>
+          <button id="addMemberBtn" class="small">追加</button>
+        </div>
+        <div id="membersList" class="list-stack"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <h2>パート構成</h2>
+          <button id="addPartBtn" class="small">追加</button>
+        </div>
+        <div id="partsList" class="list-stack"></div>
+        <button id="buildTableBtn" class="primary wide">表を更新</button>
+      </section>
+
+      <section class="card">
+        <h2>保存・読込</h2>
+        <div class="button-grid">
+          <button id="saveLocalBtn">ローカル保存</button>
+          <button id="restoreLocalBtn">ローカル復元</button>
+          <button id="downloadJsonBtn">JSON保存</button>
+          <label class="file-button">
+            JSON読込
+            <input id="loadJsonInput" type="file" accept="application/json,.json" />
+          </label>
+        </div>
+        <p class="note">入力データはサーバーへ送信しません。GitHub Pages上に生徒名や構成データは残りません。</p>
+      </section>
+
+      <section class="card">
+        <h2>生徒別出力</h2>
+        <div class="output-controls">
+          <select id="studentSelect"></select>
+          <button id="copyOutputBtn">コピー</button>
+        </div>
+        <textarea id="studentOutput" readonly rows="9"></textarea>
+      </section>
+    </section>
+
+    <section class="center-panel">
+      <section class="card playback-card">
+        <div class="playback-top">
+          <div>
+            <div class="current-label" id="currentLabel">未生成</div>
+            <div class="sub-label" id="currentSubLabel">表を更新してください</div>
+          </div>
+          <div class="transport">
+            <button id="firstBtn">⏮</button>
+            <button id="prevBtn">◀</button>
+            <button id="playBtn" class="primary">▶</button>
+            <button id="pauseBtn">⏸</button>
+            <button id="stopBtn">■</button>
+            <button id="nextBtn">▶</button>
+            <button id="lastBtn">⏭</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-toolbar">
+          <div>
+            <strong>フォーメーション表</strong>
+            <span id="selectedCellLabel">セル未選択</span>
+          </div>
+          <div class="special-buttons">
+            <button data-token="→">→</button>
+            <button data-token="IN-L">IN-L</button>
+            <button data-token="IN-R">IN-R</button>
+            <button data-token="IN-B">IN-B</button>
+            <button data-token="OUT-L">OUT-L</button>
+            <button data-token="OUT-R">OUT-R</button>
+            <button data-token="OUT-B">OUT-B</button>
+            <button data-token="OFF">OFF</button>
+            <button data-token="">空欄</button>
+          </div>
+        </div>
+        <div class="table-wrap" id="tableWrap">
+          <table id="formationTable"></table>
+        </div>
+      </section>
+    </section>
+
+    <section class="right-panel">
+      <section class="card stage-card">
+        <div class="section-title-row">
+          <h2>ステージ図</h2>
+          <span class="note">クリックで選択セルへ座標入力</span>
+        </div>
+        <div class="stage-legend">
+          <span>下手 ←</span>
+          <span>奥</span>
+          <span>→ 上手</span>
+        </div>
+        <div id="stage" class="stage" role="application" aria-label="ステージ図">
+          <div class="stage-label stage-front">前・客席</div>
+          <div class="stage-label stage-back">奥</div>
+          <div class="stage-label stage-left">下手</div>
+          <div class="stage-label stage-right">上手</div>
+          <svg id="gridSvg" class="grid-svg"></svg>
+          <div id="dancersLayer" class="dancers-layer"></div>
+        </div>
+        <div class="stage-help">
+          座標：x=0 下手、x=4 上手 / y=0 奥、y=4 前。クリックは0.5刻みにスナップします。
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>確認ポイント</h2>
+        <div id="warnings" class="warnings"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
