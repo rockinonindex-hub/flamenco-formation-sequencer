@@ -10,7 +10,7 @@
   <header class="app-header">
     <div>
       <h1>Flamenco Formation Sequencer</h1>
-      <p>コンパス単位で群舞フォーメーションを入力・再生する実証版 v0.1</p>
+      <p>コンパス単位で群舞フォーメーションを入力・再生する実証版 v0.2</p>
     </div>
     <div class="status-pill" id="saveStatus">未保存</div>
   </header>
@@ -115,7 +115,7 @@
             <button id="prevBtn">◀</button>
             <button id="playBtn" class="primary">▶</button>
             <button id="pauseBtn">⏸</button>
-            <button id="stopBtn">■</button>
+            <button id="stopBtn" class="primary">■</button>
             <button id="nextBtn">▶</button>
             <button id="lastBtn">⏭</button>
           </div>
@@ -138,6 +138,8 @@
             <button data-token="OUT-B">OUT-B</button>
             <button data-token="OFF">OFF</button>
             <button data-token="">空欄</button>
+            <button data-row-mode="circle" class="formation-mode-btn">輪</button>
+            <button data-row-mode="normal" class="formation-mode-btn">通常</button>
           </div>
         </div>
         <div class="table-wrap" id="tableWrap">
@@ -150,7 +152,7 @@
       <section class="card stage-card">
         <div class="section-title-row">
           <h2>ステージ図</h2>
-          <span class="note">クリックで選択セルへ座標入力</span>
+          <span class="note">クリック/タップで選択セルへ座標入力</span>
         </div>
         <div class="stage-legend">
           <span>下手 ←</span>
